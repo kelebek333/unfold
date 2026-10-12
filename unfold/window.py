@@ -164,7 +164,7 @@ class UnfoldWindow(Gtk.ApplicationWindow):
         return box
 
     def build_browser(self):
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, border_width=6)
         # The path as one button per folder, like the one of Nemo, with arrows to scroll it when it is long
         self.pathbar = Gtk.Box()
         self.pathbar.get_style_context().add_class("linked")
@@ -181,7 +181,7 @@ class UnfoldWindow(Gtk.ApplicationWindow):
         self.path_right = Gtk.Button(tooltip_text=_("Scroll right"))
         self.path_right.add(Gtk.Image.new_from_icon_name("xsi-pan-end-symbolic", Gtk.IconSize.BUTTON))
         self.path_right.connect("clicked", self.scroll_path, 1)
-        bar = Gtk.Box(spacing=6, margin=6)
+        bar = Gtk.Box(spacing=6)
         bar.pack_start(self.path_left, False, False, 0)
         bar.pack_start(self.path_scroll, True, True, 0)
         bar.pack_start(self.path_right, False, False, 0)
@@ -228,7 +228,7 @@ class UnfoldWindow(Gtk.ApplicationWindow):
         scrolled = Gtk.ScrolledWindow(shadow_type=Gtk.ShadowType.IN)
         scrolled.add(self.view)
         box.pack_start(scrolled, True, True, 0)
-        self.status = Gtk.Label(xalign=0, margin=6)
+        self.status = Gtk.Label(xalign=0, margin_start=3)
         box.pack_start(self.status, False, False, 0)
         return box
 
