@@ -58,7 +58,38 @@ ARCHIVE_TYPES = [
     "application/x-xar",
 ]
 
-NAME, PATH, IS_DIR, SIZE, MODIFIED = 1, 2, 3, 4, 5
+NAME, PATH, IS_DIR, SIZE, MODIFIED, TYPE = 1, 2, 3, 4, 5, 6
+
+
+# File types (this lets us sort files by generic type)
+TYPES = {
+    "application-x-executable": _("Program"),
+    "audio-x-generic": _("Audio"),
+    "font-x-generic": _("Font"),
+    "image-x-generic": _("Image"),
+    "package-x-generic": _("Archive"),
+    "text-html": _("Markup"),
+    "text-x-generic": _("Text"),
+    "text-x-generic-template": _("Text"),
+    "text-x-script": _("Program"),
+    "video-x-generic": _("Video"),
+    "x-office-address-book": _("Contacts"),
+    "x-office-calendar": _("Calendar"),
+    "x-office-document": _("Document"),
+    "x-office-presentation": _("Presentation"),
+    "x-office-spreadsheet": _("Spreadsheet"),
+}
+
+
+def get_type(entry):
+    """Returns what the entry is in a word: Folder, Image, Text..."""
+    if entry.is_dir:
+        return _("Folder")
+    content_type = Gio.content_type_guess(entry.name, None)[0]
+    if Gio.content_type_is_unknown(content_type):
+        return _("Binary")
+    return TYPES.get(Gio.content_type_get_generic_icon_name(content_type)) or \
+        Gio.content_type_get_description(content_type)
 
 
 def header_button(icon, label, action):
@@ -155,9 +186,9 @@ class UnfoldWindow(Gtk.ApplicationWindow):
         bar.pack_start(self.path_right, False, False, 0)
         box.pack_start(bar, False, False, 0)
 
-        self.store = Gtk.ListStore(Gio.Icon, str, str, bool, GObject.TYPE_INT64, str)
+        self.store = Gtk.ListStore(Gio.Icon, str, str, bool, GObject.TYPE_INT64, str, str)
         self.sorted = Gtk.TreeModelSort(model=self.store)
-        for column in (NAME, SIZE, MODIFIED):
+        for column in (NAME, SIZE, TYPE, MODIFIED):
             self.sorted.set_sort_func(column, self.compare, column)
         self.sorted.set_sort_column_id(NAME, Gtk.SortType.ASCENDING)
         self.view = Gtk.TreeView(model=self.sorted, enable_search=True, search_column=NAME)
@@ -185,6 +216,10 @@ class UnfoldWindow(Gtk.ApplicationWindow):
         column.set_sort_column_id(SIZE)
         self.view.append_column(column)
 
+        column = Gtk.TreeViewColumn(_("Type"), Gtk.CellRendererText(), text=TYPE)
+        column.set_sort_column_id(TYPE)
+        self.view.append_column(column)
+
         column = Gtk.TreeViewColumn(_("Modified"), Gtk.CellRendererText(), text=MODIFIED)
         column.set_sort_column_id(MODIFIED)
         self.view.append_column(column)
@@ -205,7 +240,7 @@ class UnfoldWindow(Gtk.ApplicationWindow):
             descending = self.sorted.get_sort_column_id()[-1] == Gtk.SortType.DESCENDING
             return (-1 if model[a][IS_DIR] else 1) * (-1 if descending else 1)
         first, second = model[a][column], model[b][column]
-        if column == NAME:
+        if column in (NAME, TYPE):
             first, second = first.casefold(), second.casefold()
         return (first > second) - (first < second)
 
@@ -237,7 +272,7 @@ class UnfoldWindow(Gtk.ApplicationWindow):
         self.store.clear()
         for entry in self.archive.get_children(folder):
             self.store.append([get_icon(entry.name, entry.is_dir), entry.name, entry.path, entry.is_dir,
-                               entry.size, entry.modified])
+                               entry.size, entry.modified, get_type(entry)])
         self.update_pathbar()
         self.update_status()
         self.update_actions()
