@@ -1,0 +1,80 @@
+#!/usr/bin/python3
+"""Used by the Nemo actions to determine the action visibility.
+
+Exit status 0 shows the action.
+
+It is hidden for a single compressed archive, such as a zip or a tar.gz,
+and shown for anything else: several files, a tar, or an archive that is a kind of another one (a docx
+is a zip).
+"""
+import sys
+
+# (type, compressed) in the order of nemo-fileroller: the first one that the file is a kind of is the one
+ARCHIVES = [
+    ("application/x-7z-compressed", True),
+    ("application/x-7z-compressed-tar", True),
+    ("application/x-ace", True),
+    ("application/x-alz", True),
+    ("application/x-ar", True),
+    ("application/x-arj", True),
+    ("application/x-bzip", True),
+    ("application/x-bzip-compressed-tar", True),
+    ("application/x-bzip1", True),
+    ("application/x-bzip1-compressed-tar", True),
+    ("application/vnd.ms-cab-compressed", True),
+    ("application/x-cbr", True),
+    ("application/x-cbz", True),
+    ("application/x-cd-image", False),
+    ("application/x-compress", True),
+    ("application/x-compressed-tar", True),
+    ("application/x-cpio", True),
+    ("application/x-deb", True),
+    ("application/x-ear", True),
+    ("application/x-ms-dos-executable", False),
+    ("application/x-gtar", False),
+    ("application/x-gzip", True),
+    ("application/x-gzpostscript", True),
+    ("application/x-java-archive", True),
+    ("application/x-lha", True),
+    ("application/x-lhz", True),
+    ("application/x-lzip", True),
+    ("application/x-lzip-compressed-tar", True),
+    ("application/x-lzma", True),
+    ("application/x-lzma-compressed-tar", True),
+    ("application/x-lzop", True),
+    ("application/x-lzop-compressed-tar", True),
+    ("application/x-ms-wim", True),
+    ("application/x-rar", True),
+    ("application/x-rar-compressed", True),
+    ("application/x-rpm", True),
+    ("application/x-rzip", True),
+    ("application/x-tar", False),
+    ("application/x-tarz", True),
+    ("application/x-stuffit", True),
+    ("application/x-war", True),
+    ("application/x-xz", True),
+    ("application/x-xz-compressed-tar", True),
+    ("application/x-zip", True),
+    ("application/x-zip-compressed", True),
+    ("application/x-zoo", True),
+    ("application/x-zstd-compressed-tar", True),
+    ("application/zip", True),
+    ("application/zstd", True),
+    ("multipart/x-zip", True),
+]
+
+if len(sys.argv) != 2:
+    sys.exit(0)
+
+from gi.repository import Gio
+
+try:
+    info = Gio.File.new_for_path(sys.argv[1]).query_info("standard::content-type", Gio.FileQueryInfoFlags.NONE, None)
+except Exception:
+    sys.exit(0)
+content_type = info.get_content_type()
+for archive, compressed in ARCHIVES:
+    if Gio.content_type_is_a(content_type, archive):
+        derived = not Gio.content_type_equals(content_type, archive)
+        sys.exit(0 if derived or not compressed else 1)
+sys.exit(0)

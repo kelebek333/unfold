@@ -1,0 +1,11 @@
+[Nemo Action]
+Name=Compress...
+Comment=Create a compressed archive with the selected objects
+Exec=unfold --compress -- %F
+Icon-Name=xsi-add-files-to-archive-symbolic
+Selection=notnone
+Extensions=any;
+Dependencies=unfold;
+Quote=double
+Conditions=exec <unfold-compress-visible %F>;
+UriScheme=file

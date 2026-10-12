@@ -1,0 +1,14 @@
+#!/bin/bash
+
+xgettext --language=Desktop \
+    --output=unfold.pot \
+    data/org.x.unfold.desktop.in data/nemo/*.nemo_action.in
+
+xgettext --language=Python \
+    --join-existing \
+    --from-code=UTF-8 \
+    --keyword=_ \
+    --keyword=N_ \
+    --keyword=ngettext:1,2 \
+    --output=unfold.pot \
+    unfold/*.py

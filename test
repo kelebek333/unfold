@@ -1,0 +1,27 @@
+#!/bin/bash
+version=$(sed -n "s/^project('unfold', version : '\([^']*\)'.*/\1/p" meson.build)
+module=/usr/lib/python3/dist-packages/unfold
+
+sudo rm -rf $module
+sudo cp -R unfold $module
+sudo rm -rf $module/__pycache__ $module/config.py.in
+sed "s|@version@|$version|" unfold/config.py.in > config.py.new
+sudo mv config.py.new $module/config.py
+
+sudo cp data/unfold.svg /usr/share/icons/hicolor/scalable/apps/
+sudo gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor 2>/dev/null
+
+sudo cp data/org.x.unfold.desktop.in /usr/share/applications/org.x.unfold.desktop
+sudo update-desktop-database -q /usr/share/applications 2>/dev/null
+
+for action in data/nemo/*.nemo_action.in; do
+    sudo cp "$action" /usr/share/nemo/actions/$(basename "$action" .in)
+done
+sudo cp data/nemo/unfold-compress-visible /usr/share/nemo/actions/
+sudo chmod 755 /usr/share/nemo/actions/unfold-compress-visible
+
+sudo cp data/unfold /usr/bin/unfold
+sudo chmod 755 /usr/bin/unfold
+
+killall unfold 2>/dev/null
+unfold "$@" &

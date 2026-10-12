@@ -1,0 +1,32 @@
+Source: unfold
+Section: utils
+Priority: optional
+Maintainer: Clement Lefebvre <root@linuxmint.com>
+Build-Depends:
+ debhelper-compat (= 13),
+ gettext,
+ libglib2.0-dev | libgio-2.0-dev,
+ libgtk-3-bin,
+ meson (>= 0.59.0),
+ pkg-config,
+ python3,
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+
+Package: unfold
+Architecture: all
+Depends:
+ ${misc:Depends},
+ 7zip,
+ gir1.2-gtk-3.0,
+ gir1.2-xapp-1.0,
+ python3,
+ python3-gi,
+ python3-setproctitle,
+ python3-xapp,
+ xapp-symbolic-icons,
+Recommends:
+ 7zip-rar,
+Description: Archive manager for Linux desktops
+ Create, browse and extract archives: zip, 7z, tar and its compressed
+ variants, rar and more, including password protected ones.
