@@ -36,6 +36,7 @@ configure_file(
   output: 'config.py',
   configuration: {
     'version': meson.project_version(),
+    'data_dir': join_paths(prefix, datadir, 'unfold'),
   },
   install: true,
   install_dir: python_module_dir,

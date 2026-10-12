@@ -6,6 +6,11 @@ install_data(
   install_dir: join_paths(get_option('datadir'), 'icons', 'hicolor', 'scalable', 'apps'),
 )
 
+install_data(
+  'unfold.svg',
+  install_dir: join_paths(get_option('datadir'), 'unfold'),
+)
+
 gnome.post_install(gtk_update_icon_cache: true, update_desktop_database: true)
 
 i18n.merge_file(

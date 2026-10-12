@@ -1,1 +1,2 @@
 VERSION = "@version@"
+DATA_DIR = "@data_dir@"

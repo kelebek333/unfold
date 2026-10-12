@@ -6,9 +6,10 @@ from gettext import ngettext
 import gi
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gio, GLib, GObject, Gtk, Pango
+from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk, Pango
 
 from unfold import _, sevenzip
+from unfold.config import DATA_DIR
 from unfold.dialogs import (ask_conflicts, create_archive_task, extract_task, get_icon, message,
                             open_archive_task, unlock)
 
@@ -150,9 +151,9 @@ class UnfoldWindow(Gtk.ApplicationWindow):
     def build_welcome(self):
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12, valign=Gtk.Align.CENTER,
                       halign=Gtk.Align.CENTER)
-        image = Gtk.Image.new_from_icon_name("unfold", Gtk.IconSize.DIALOG)
-        image.set_pixel_size(96)
-        box.add(image)
+        scale = self.get_scale_factor()
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(os.path.join(DATA_DIR, "unfold.svg"), 96 * scale, 96 * scale)
+        box.add(Gtk.Image.new_from_surface(Gdk.cairo_surface_create_from_pixbuf(pixbuf, scale, None)))
         label = Gtk.Label(label=_("Open an archive or create a new one"))
         label.get_style_context().add_class("dim-label")
         box.add(label)

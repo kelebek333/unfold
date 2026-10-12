@@ -5,10 +5,12 @@ module=/usr/lib/python3/dist-packages/unfold
 sudo rm -rf $module
 sudo cp -R unfold $module
 sudo rm -rf $module/__pycache__ $module/config.py.in
-sed "s|@version@|$version|" unfold/config.py.in > config.py.new
+sed "s|@version@|$version|; s|@data_dir@|/usr/share/unfold|" unfold/config.py.in > config.py.new
 sudo mv config.py.new $module/config.py
 
 sudo cp data/unfold.svg /usr/share/icons/hicolor/scalable/apps/
+sudo mkdir -p /usr/share/unfold
+sudo cp data/unfold.svg /usr/share/unfold/
 sudo gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor 2>/dev/null
 
 sudo cp data/org.x.unfold.desktop.in /usr/share/applications/org.x.unfold.desktop
