@@ -389,18 +389,18 @@ class UnfoldWindow(Gtk.ApplicationWindow):
         extract_task(self, self.archive, dest, selection, overwrite, lambda ok: ok and success(),
                      lambda: not self.closing)
 
-    def show_uri(self, path):
+    def show_uri(self, path, error_title):
         try:
             Gio.AppInfo.launch_default_for_uri(Gio.File.new_for_path(path).get_uri(), None)
         except GLib.Error as error:
-            message(self, _("Could not open it"), error.message)
+            message(self, error_title, "%s\n%s" % (os.path.basename(path), error.message))
 
     def open_file(self, path):
         if not self.unlock({path}):
             return
         folder = tempfile.mkdtemp(prefix="unfold-")
         self.temp_dirs.append(folder)
-        self.extract_task(folder, {path}, True, lambda: self.show_uri(os.path.join(folder, path)))
+        self.extract_task(folder, {path}, True, lambda: self.show_uri(os.path.join(folder, path), _("Could not open the file")))
 
     def on_extract(self, *_args):
         selection = self.get_selected_paths() or None
@@ -433,7 +433,7 @@ class UnfoldWindow(Gtk.ApplicationWindow):
             if answer is None:
                 return
             overwrite = answer == "replace"
-        self.extract_task(dest, selection, overwrite, lambda: self.show_uri(dest))
+        self.extract_task(dest, selection, overwrite, lambda: self.show_uri(dest, _("Could not open the folder")))
 
     # -- creating ----------------------------------------------------------
 

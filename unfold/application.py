@@ -164,9 +164,6 @@ class UnfoldApplication(Gtk.Application):
 
 
 def main(argv):
-    if not sevenzip.get_program():
-        print(_("Unfold needs 7-Zip: please install the 7zip package."), file=sys.stderr)
-        return 1
     setproctitle("unfold")
     GLib.set_prgname(APP_ID)
     GLib.set_application_name("Unfold")
