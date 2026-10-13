@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Clement Lefebvre <root@linuxmint.com>
 Build-Depends:
  debhelper-compat (= 13),
+ desktop-file-utils,
  gettext,
  libglib2.0-dev | libgio-2.0-dev,
  libgtk-3-bin,
